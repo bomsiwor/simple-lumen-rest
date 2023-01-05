@@ -26,10 +26,18 @@ php -S localhost:8000 -t public
 
 ## Endpoints
 
-| method | uri         | params          | description                     |
-| ------ | ----------- | --------------- | ------------------------------- |
-| POST   | `/login`    | described later | Login and getting the JWT Token |
-| POST   | `/register` | described later | Register using some params      |
+| method | uri                      | params          | description                                        |
+| ------ | ------------------------ | --------------- | -------------------------------------------------- |
+| POST   | `/login`                 | described later | Login and getting the JWT Token                    |
+| POST   | `/register`              | described later | Register using some params                         |
+| POST   | `/logout`                | none            | Logout and reset the JWT                           |
+| GET    | `/user-profile`          | none            | Get logged-in user                                 |
+| POST   | `/refresh`               | none            | Refresh the JWT Token                              |
+| POST   | `/refresh`               | none            | Refresh the JWT Token                              |
+| GET    | `/api/nilai`             | none            | Return all "nilai" tables                          |
+| GET    | `/api/avg-nilai`         | none            | Return all "nilai" tables and average by mahasiswa |
+| GET    | `/api/avg-nilai-jurusan` | none            | Return all "nilai" tables and average by jurusan   |
+| POST   | `/api/nilai`             | none            | Add data nilai                                     |
 
 ## License
 
