@@ -26,10 +26,10 @@ php -S localhost:8000 -t public
 
 ## Endpoints
 
-|method|uri|params|description|
-|---|---|---|---}
-|POST|`/login`| described later|Login and getting the JWT Token|
-|POST|`/register`| described later|Register using some params|
+| method | uri         | params          | description                     |
+| ------ | ----------- | --------------- | ------------------------------- |
+| POST   | `/login`    | described later | Login and getting the JWT Token |
+| POST   | `/register` | described later | Register using some params      |
 
 ## License
 
