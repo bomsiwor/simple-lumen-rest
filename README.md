@@ -22,22 +22,39 @@ I say Thank! for you who contributing to improve this project!
 php -S localhost:8000 -t public
 ```
 
-5. Test the API using endpoints.
+5. Test the API endpoints using Postman, etc.
+
+## Features
+
+| App Features                                                     |
+| :--------------------------------------------------------------- |
+| Built on [Lumen](https://laravel.com/) 8                         |
+| Uses [MySQL](https://github.com/mysql) Database (can be changed) |
+| Login, Register with JWTAuth                                     |
+| CRUD                                                             |
+| Input data by uploading CSV Files.                               |
+| Improved Exception Handling                                      |
 
 ## Endpoints
 
-| method | uri                      | params          | description                                        |
-| ------ | ------------------------ | --------------- | -------------------------------------------------- |
-| POST   | `/login`                 | described later | Login and getting the JWT Token                    |
-| POST   | `/register`              | described later | Register using some params                         |
-| POST   | `/logout`                | none            | Logout and reset the JWT                           |
-| GET    | `/user-profile`          | none            | Get logged-in user                                 |
-| POST   | `/refresh`               | none            | Refresh the JWT Token                              |
-| POST   | `/refresh`               | none            | Refresh the JWT Token                              |
-| GET    | `/api/nilai`             | none            | Return all "nilai" tables                          |
-| GET    | `/api/avg-nilai`         | none            | Return all "nilai" tables and average by mahasiswa |
-| GET    | `/api/avg-nilai-jurusan` | none            | Return all "nilai" tables and average by jurusan   |
-| POST   | `/api/nilai`             | none            | Add data nilai                                     |
+| method | uri                         | params          | description                                                          |
+| ------ | --------------------------- | --------------- | -------------------------------------------------------------------- |
+| POST   | `/login`                    | described later | Login and getting the JWT Token                                      |
+| POST   | `/register`                 | described later | Register using some params                                           |
+| POST   | `/logout`                   | none            | Logout and reset the JWT                                             |
+| GET    | `/user-profile`             | none            | Get logged-in user                                                   |
+| POST   | `/refresh`                  | none            | Refresh the JWT Token                                                |
+| GET    | `/api/nilai`                | none            | Return all "nilai" tables                                            |
+| GET    | `/api/avg-nilai`            | none            | Return all "nilai" tables and average by mahasiswa                   |
+| GET    | `/api/avg-nilai-jurusan`    | none            | Return all "nilai" tables and average by jurusan                     |
+| POST   | `/api/nilai`                | none            | Add data nilai. Only dosen role allowed                              |
+| POST   | `/api/upload-nilai`         | none            | Upload `.csv` and add the files to database. Only Dosen role allowed |
+| PUT    | `/api/nilai/{nim}/{matkul}` | none            | Edit data nilai. Only Dosen Role Allowed                             |
+| DELETE | `/api/nilai/{nim}/{matkul}` | none            | Delete data nilai. Only dosen role allowed                           |
+
+## Note
+
+Enjoy!
 
 ## License
 
