@@ -58,13 +58,14 @@ You will required to manually fill tables :
 | POST   | `/api/upload-nilai`         | uploaded_file : `.csv`            | Upload `.csv` and add the files to database. Only Dosen role allowed |
 | PUT    | `/api/nilai/{nim}/{matkul}` | nim (int), dosen_id (int), matkul_id (int), nilai (int), keterangan (string)            | Edit data nilai. Only Dosen Role Allowed                             |
 | DELETE | `/api/nilai/{nim}/{matkul}` | nim (int), matkul (int)            | Delete data nilai. Only dosen role allowed                           |
+
 More information described below.
 
 #### Advanced Information
 1. Register
     Params :
     - The default param is _nama, email, password_
-    - If you trying to register as a **Mahasiswa**, send parameters such as _nim (int 8), tanggal-lahir (date)_
+    - If you trying to register as a **Mahasiswa**, send parameters such as _nim (int 8), tanggal-lahir (date dd-mm-YYYY)_
     - If you trying to register as a **Dosen**, send parameter such as _nip_ (it will converted to _id_ in database)
 2. Login
     - Send parameter _email, password_
