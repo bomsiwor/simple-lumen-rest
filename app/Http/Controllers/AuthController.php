@@ -8,16 +8,21 @@ use  App\Models\User;
 use App\Models\Mahasiswa;
 use App\Models\Dosen;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-
-
+    /**
+     * Create a new controller instance
+     *
+     * - Registers the "auth:api" middleware, which verifies that the user is authenticated before allowing access to the controller's methods.
+     * 
+     * @return  void
+     */
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'refresh', 'logout', 'register']]);
     }
+
     /**
      * Get a JWT via given credentials.
      *
@@ -41,7 +46,62 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    /**
+     * Handle register
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
+    {
+        // Validate Input
+        $this->validateRegisterData($request);
+
+        // Filter only the credential
+        $credentials = $request->only(['email', 'password']);
+
+        if ($request->has('nim') && $request->missing('id')) :
+            // Create User and Mahasiswa Object 
+            $this->createUser($credentials, 1);
+
+            // Retrieve User Id
+            $user_id = User::where('email', $request->email)->first()->id;
+
+            // Create Mahasiswa data
+            $data = $request->only(['nim', 'jurusan', 'nama']);
+            $data['tl'] = $request->tanggal_lahir;
+            $user = $this->createMahasiswa($data, $user_id);
+
+        elseif ($request->has('id') && $request->missing('nim')) :
+            // Create User and Dosen object.
+            $this->createUser($credentials, 2);
+
+            // Retrive User id
+            $user_id = User::where('email', $request->email)->first()->id;
+
+            // Create Dosen data
+            $data = $request->only(['nama', 'id']);
+            $user = $this->createDosen($data, $user_id);
+
+        elseif ($request->has(['nim', 'id'])) :
+            return response()->json([
+                'status' => 300,
+                'type' => 'error',
+                'description' => 'Masukkan data yang valid!'
+            ], 300);
+        endif;
+
+        // Response message
+        return response()->json([
+            'status' => 201,
+            'type' => 'success',
+            'description' => 'Berhasil Registrasi!',
+            'data' => $user
+        ], 201);
+    }
+
+
+    public function validateRegisterData(Request $request)
     {
         // Accept all form data
         $this->validate($request, [
@@ -53,65 +113,57 @@ class AuthController extends Controller
             'tanggal_lahir' => 'date_format:d-m-Y',
             'jurusan' => 'integer'
         ]);
+    }
 
-        // Filter only the credential
-        $credentials = $request->only(['email', 'password']);
+    /**
+     * Create user object using spesific form data
+     *
+     * @param array $credential is email and password
+     * @param int $role is user role based on spesific data
+     * @return void
+     */
+    public function createUser($credential, $role)
+    {
+        User::create(array_merge(
+            $credential,
+            [
+                'password' => Hash::make($credential['password']),
+                'role_id' => $role
+            ]
+        ));
+    }
 
-        // Save data to conditional input
-        // If the user is Mahasiswa
-        if ($request->has('nim') && $request->missing('id')) :
-            $user = User::create(array_merge(
-                $credentials,
-                [
-                    'password' => Hash::make($request->password),
-                    'role_id' => 1
-                ]
-            ));
+    /**
+     * Create Mahasiswa Object data
+     *
+     * @param array $data is Spesific data which only mahasiswa having
+     * @param int $user_id is retrieved after pass the validation
+     * @return void
+     */
+    public function createMahasiswa($data, $user_id)
+    {
+        $mahasiswaData = [
+            'user_id' => $user_id,
+            'tl' => \DateTime::createFromFormat('d-m-Y', $data['tl'])->format('Y-m-d')
+        ];
 
-            $user_id = User::where('email', $request->email)->first()->id;
-            $data = $request->only(['nim', 'jurusan', 'nama']);
+        return Mahasiswa::create(array_merge($data, $mahasiswaData));
+    }
 
-            // Input to mahasiswa table
-            Mahasiswa::create(array_merge(
-                $data,
-                [
-                    'user_id' => $user_id,
-                    'tl' => \DateTime::createFromFormat('d-m-Y', $request->tanggal_lahir)->format('Y-m-d')
-                ]
-            ));
+    /**
+     * Create Dosen Object data
+     *
+     * @param array $data is spesific data dosen have
+     * @param int $user_id is id retrieved after creating user object
+     * @return void
+     */
+    public function createDosen($data, $user_id)
+    {
+        $dosenData = [
+            'user_id' => $user_id
+        ];
 
-        // If the user is Dosen
-        elseif ($request->has('id') && $request->missing('nim')) :
-            $user = User::create(array_merge(
-                $credentials,
-                [
-                    'password' => Hash::make($request->password),
-                    'role_id' => 2
-                ]
-            ));
-
-            $user_id = User::where('email', $request->email)->first()->id;
-            $data = $request->only(['nama', 'id']);
-
-            Dosen::create(array_merge(
-                $data,
-                [
-                    'user_id' => $user_id
-                ]
-            ));
-
-        // If the user input has nim and id
-        elseif ($request->has(['nim', 'id'])) :
-            return response()->json([
-                'message' => 'Masukkan data yang valid!'
-            ], 300);
-        endif;
-
-        // Response message
-        return response()->json([
-            'message' => 'Berhasil Registrasi!',
-            'user' => $user
-        ], 201);
+        return Dosen::create(array_merge($data, $dosenData));
     }
 
     public function me()
@@ -162,7 +214,11 @@ class AuthController extends Controller
         ]);
     }
 
-
+    /**
+     * Using Auth Guard instance
+     *
+     * @return  void
+     */
     public function guard()
     {
         return Auth::guard();
