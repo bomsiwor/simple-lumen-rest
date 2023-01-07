@@ -24,6 +24,13 @@ php -S localhost:8000 -t public
 
 5. Test the API endpoints using Postman, etc.
 
+### Note
+You will required to manually fill tables :
+- jurusan
+- role
+- kelas
+- mata_kuliah
+
 ## Features
 
 | App Features                                                     |
@@ -47,10 +54,26 @@ php -S localhost:8000 -t public
 | GET    | `/api/nilai`                | none            | Return all "nilai" tables                                            |
 | GET    | `/api/avg-nilai`            | none            | Return all "nilai" tables and average by mahasiswa                   |
 | GET    | `/api/avg-nilai-jurusan`    | none            | Return all "nilai" tables and average by jurusan                     |
-| POST   | `/api/nilai`                | none            | Add data nilai. Only dosen role allowed                              |
-| POST   | `/api/upload-nilai`         | none            | Upload `.csv` and add the files to database. Only Dosen role allowed |
-| PUT    | `/api/nilai/{nim}/{matkul}` | none            | Edit data nilai. Only Dosen Role Allowed                             |
-| DELETE | `/api/nilai/{nim}/{matkul}` | none            | Delete data nilai. Only dosen role allowed                           |
+| POST   | `/api/nilai`                | nim (int), dosen_id (int), matkul_id (int), nilai (int), keterangan (string)            | Add data nilai. Only dosen role allowed                              |
+| POST   | `/api/upload-nilai`         | uploaded_file : `.csv`            | Upload `.csv` and add the files to database. Only Dosen role allowed |
+| PUT    | `/api/nilai/{nim}/{matkul}` | nim (int), dosen_id (int), matkul_id (int), nilai (int), keterangan (string)            | Edit data nilai. Only Dosen Role Allowed                             |
+| DELETE | `/api/nilai/{nim}/{matkul}` | nim (int), matkul (int)            | Delete data nilai. Only dosen role allowed                           |
+
+More information described below.
+
+#### Advanced Information
+1. Register
+    Params :
+    - The default param is _nama, email, password_
+    - If you trying to register as a **Mahasiswa**, send parameters such as _nim (int 8), tanggal-lahir (date dd-mm-YYYY)_
+    - If you trying to register as a **Dosen**, send parameter such as _nip_ (it will converted to _id_ in database)
+2. Login
+    - Send parameter _email, password_
+    - You will get the JWT Key (Bearer Token)
+3. Other endpoints _(except login & register)_
+    - Set the Authorization header as Bearer token.
+    - Paste the JWT Key
+    - If suddenly you get the **Unauthorized** message, try to relogin.
 
 ## Note
 
