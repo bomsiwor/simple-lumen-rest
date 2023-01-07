@@ -30,6 +30,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('nilai',  ['uses' => 'NilaiController@showAllNilai']);
 
+    $router->get('nilai/dosen/{dosen}',  ['uses' => 'NilaiController@showAllNilai']);
+
+    $router->get('nilai/jurusan/{jurusan}',  ['uses' => 'NilaiController@showAllNilai']);
+
+    $router->get('nilai/matkul/{matkul}',  ['uses' => 'NilaiController@showAllNilai']);
+
     $router->post('nilai', ['uses' => 'NilaiController@addNilai']);
 
     $router->post('upload-nilai', ['uses' => 'NilaiController@uploadNilai']);

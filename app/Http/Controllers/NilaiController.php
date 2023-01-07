@@ -29,13 +29,24 @@ class NilaiController extends Controller
      *
      * @return  \Illuminate\Http\JsonResponse  all the data requested.
      */
-    public function showAllNilai()
+    public function showAllNilai(int $dosen = null, $jurusan = null, $matkul = null)
     {
+        // Filtering by parameter given by user
+        $filter = $dosen ? "Dosen" : ($jurusan ? "Jurusan" : ($matkul ? "Mata kuliah" : false));
+
         // Join all the record needed
         $nilai = Nilai::join('mahasiswa', 'data_nilai.nim', '=', 'mahasiswa.nim')
             ->join('jurusan', 'mahasiswa.jurusan', '=', 'jurusan.id')
             ->join('mata_kuliah', 'data_nilai.matkul_id', '=', 'mata_kuliah.id')
             ->join('dosen', 'data_nilai.dosen_id', '=', 'dosen.id');
+
+        if ($filter) :
+            $filters = $this->filterNilai($dosen, $jurusan, $matkul);
+
+            $params = $filters[0];
+            $detail = $filters[1];
+            $nilai->where($params[0], $params[1]);
+        endif;
 
         // Get all data by joined record
         $data = $nilai->get([
@@ -53,9 +64,33 @@ class NilaiController extends Controller
         return response()->json([
             'status' => 200,
             'title' => 'success',
+            'description' => ($filter) ? ("Filtered by $filter - $detail") : ("Retrieve all data"),
             'data' => $data
         ]);
     }
+
+    public function filterNilai($dosen, $jurusan, $matkul)
+    {
+        $filters = [];
+
+        if ($dosen) {
+            $filters[] = ['dosen.id', $dosen];
+            $filters[] = DB::table('dosen')->where('dosen.id', $dosen)->get('nama')->first()->nama;
+        }
+
+        if ($jurusan) {
+            $filters[] = ['jurusan.id', $jurusan];
+            $filters[] = DB::table('jurusan')->where('jurusan.id', $jurusan)->get('nama')->first()->nama;
+        }
+
+        if ($matkul) {
+            $filters[] = ['mata_kuliah.id', $matkul];
+            $filters[] = DB::table('mata_kuliah')->where('mata_kuliah.id', $matkul)->first()->judul;
+        }
+
+        return $filters;
+    }
+
 
     public function addNilai(Request $request)
     {
@@ -89,7 +124,6 @@ class NilaiController extends Controller
         );
 
         Nilai::create($request->all());
-        $nilai = Nilai::firstOrCreate($request->all());
 
         return response()->json([
             'status' => '200',
